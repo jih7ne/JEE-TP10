@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Gestion des Articles</title>
+    <style>
+        body { font-family: Arial; margin: 0; background: #f4f4f4; }
+        .header { background: #2c3e50; color: white; padding: 20px;
+            text-align: center; font-size: 22px; }
+        .footer { background: #2c3e50; color: white; text-align: center;
+            padding: 10px; position: fixed; bottom: 0; width: 100%; }
+        .container { width: 80%; margin: 30px auto; background: white;
+            padding: 30px; border-radius: 6px;
+            box-shadow: 0px 0px 8px rgba(0,0,0,0.1); }
+        .menu { margin-bottom: 20px; }
+    </style>
+</h:head>
+<h:body>
+
+    <!-- HEADER -->
+    <div class="header">Gestion des Articles</div>
+
+    <!-- MENU -->
+    <h:form>
+        <p:menubar class="menu">
+            <p:menuitem value="Accueil" icon="pi pi-home"/>
+            <p:menuitem value="Produits" icon="pi pi-list"/>
+            <p:menuitem value="Nouveau Produit" icon="pi pi-plus"
+                        onclick="PF('dlg').show()" type="button"/>
+        </p:menubar>
+    </h:form>
+
+    <!-- TABLE -->
+    <div class="container">
+        <h:form id="form">
+            <p:growl id="growl" showDetail="true" life="3000"/>
+
+            <p:dataTable id="tableProduits"
+                         value="#{produitBean.produits}"
+                         var="a"
+                         paginator="true"
+                         rows="5"
+                         stripedRows="true"
+                         responsiveLayout="scroll"
+                         paginatorPosition="bottom"
+                         rowsPerPageTemplate="5,10,15"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink}
+                             {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="Articles {startRecord}-{endRecord}
+                             sur {totalRecords}">
+
+                <p:column headerText="Nom" sortBy="#{a.name}" filterBy="#{a.name}">
+                    #{a.name}
+                </p:column>
+                <p:column headerText="Prix" sortBy="#{a.price}" filterBy="#{a.price}">
+                    #{a.price}
+                </p:column>
+                <p:column headerText="Actions">
+                    <p:commandButton value="Supprimer"
+                                     icon="pi pi-trash"
+                                     styleClass="ui-button-danger"
+                                     action="#{produitBean.delete(a.id)}"
+                                     update="@form">
+                        <p:confirm header="Confirmation"
+                                   message="Voulez-vous vraiment supprimer cet article ?"
+                                   icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <h:outputText value="No articles yet. Please add one."
+                          rendered="#{empty produitBean.produits}"/>
+        </h:form>
+    </div>
+
+    <!-- CONFIRMATION DIALOG -->
+    <h:form>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Oui" type="button"
+                             styleClass="ui-confirmdialog-yes ui-button-danger"
+                             icon="pi pi-check"/>
+            <p:commandButton value="Non" type="button"
+                             styleClass="ui-confirmdialog-no ui-button-secondary"
+                             icon="pi pi-times"/>
+        </p:confirmDialog>
+    </h:form>
+
+    <!-- DIALOG AJOUT -->
+    <p:dialog header="Nouvel Produit" widgetVar="dlg" modal="true" closable="true">
+        <h:form id="dialogForm">
+            <p:panelGrid columns="4" layout="flex"
+                         columnClasses="col-12 md:col-3 xl:col-2, col-12 md:col-9 xl:col-4,
+                             col-12 md:col-3 xl:col-2, col-12 md:col-9 xl:col-4"
+                         contentStyleClass="align-items-baseline ui-fluid">
+                <h:outputLabel value="Nom"/>
+                <p:inputText value="#{produitBean.produit.name}" required="true"/>
+
+                <h:outputLabel value="Prix"/>
+                <p:inputText value="#{produitBean.produit.price}" required="true"/>
+
+                <p:commandButton value="Enregistrer"
+                                 icon="pi pi-check"
+                                 action="#{produitBean.save}"
+                                 update=":form"
+                                 oncomplete="PF('dlg').hide()"/>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+
+    <!-- FOOTER -->
+    <div class="footer">Java EE / PrimeFaces Application</div>
+
+</h:body>
+</html>
