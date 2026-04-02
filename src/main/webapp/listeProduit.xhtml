@@ -30,7 +30,7 @@
         </p:menubar>
     </h:form>
 
-    <!-- TABLE -->
+    <!-- MAIN TABLE -->
     <div class="container">
         <h:form id="form">
             <p:growl id="growl" showDetail="true" life="3000"/>
@@ -57,13 +57,23 @@
                     #{a.price}
                 </p:column>
                 <p:column headerText="Actions">
+                    <!-- EDIT BUTTON -->
+                    <p:commandButton value="Modifier"
+                                     icon="pi pi-pencil"
+                                     styleClass="ui-button-warning"
+                                     action="#{produitBean.editSelected(a)}"
+                                     update=":editForm"
+                                     oncomplete="PF('editDlg').show()"
+                                     style="margin-right: 5px"/>
+
+                    <!-- DELETE BUTTON -->
                     <p:commandButton value="Supprimer"
                                      icon="pi pi-trash"
                                      styleClass="ui-button-danger"
-                                     action="#{produitBean.delete(a.id)}"
+                                     action="#{produitBean.delete(a.id, a.name)}"
                                      update="@form">
                         <p:confirm header="Confirmation"
-                                   message="Voulez-vous vraiment supprimer cet article ?"
+                                   message="Voulez-vous vraiment supprimer l'article &quot;#{a.name}&quot; ?"
                                    icon="pi pi-exclamation-triangle"/>
                     </p:commandButton>
                 </p:column>
@@ -74,7 +84,7 @@
         </h:form>
     </div>
 
-    <!-- CONFIRMATION DIALOG -->
+    <!-- CONFIRMATION DIALOG (global, for delete) -->
     <h:form>
         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
             <p:commandButton value="Oui" type="button"
@@ -86,7 +96,7 @@
         </p:confirmDialog>
     </h:form>
 
-    <!-- DIALOG AJOUT -->
+    <!-- DIALOG ADD PRODUCT -->
     <p:dialog header="Nouvel Produit" widgetVar="dlg" modal="true" closable="true">
         <h:form id="dialogForm">
             <p:panelGrid columns="4" layout="flex"
@@ -104,6 +114,28 @@
                                  action="#{produitBean.save}"
                                  update=":form"
                                  oncomplete="PF('dlg').hide()"/>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+
+    <!-- DIALOG EDIT PRODUCT -->
+    <p:dialog header="Modifier Produit" widgetVar="editDlg" modal="true" closable="true">
+        <h:form id="editForm">
+            <p:panelGrid columns="4" layout="flex"
+                         columnClasses="col-12 md:col-3 xl:col-2, col-12 md:col-9 xl:col-4,
+                             col-12 md:col-3 xl:col-2, col-12 md:col-9 xl:col-4"
+                         contentStyleClass="align-items-baseline ui-fluid">
+                <h:outputLabel value="Nom"/>
+                <p:inputText value="#{produitBean.selected.name}" required="true"/>
+
+                <h:outputLabel value="Prix"/>
+                <p:inputText value="#{produitBean.selected.price}" required="true"/>
+
+                <p:commandButton value="Enregistrer les modifications"
+                                 icon="pi pi-check"
+                                 action="#{produitBean.update}"
+                                 update=":form"
+                                 oncomplete="PF('editDlg').hide()"/>
             </p:panelGrid>
         </h:form>
     </p:dialog>

@@ -20,6 +20,10 @@ public class ProduitService {
         dao.save(p);
     }
 
+    public void updateProduit(Produit p) {
+        dao.update(p);
+    }
+
     public void deleteProduit(Long id) {
         dao.delete(id);
     }

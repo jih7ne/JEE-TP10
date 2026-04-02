@@ -18,6 +18,7 @@ public class ProduitBean implements Serializable {
     private ProduitService service;
 
     private Produit produit = new Produit();
+    private Produit selected = new Produit();
     private List<Produit> produits;
 
     public List<Produit> getProduits() {
@@ -37,15 +38,44 @@ public class ProduitBean implements Serializable {
         produit = new Produit();
     }
 
-    public void delete(Long id) {
+    // Populate the edit dialog with the selected product
+    public void editSelected(Produit p) {
+        // Copy fields so the dialog works on a detached copy
+        this.selected = new Produit();
+        this.selected.setId(p.getId());
+        this.selected.setName(p.getName());
+        this.selected.setPrice(p.getPrice());
+    }
+
+    public void update() {
+        service.updateProduit(selected);
+        // Refresh the matching entry in the local list
+        if (produits != null) {
+            for (int i = 0; i < produits.size(); i++) {
+                if (produits.get(i).getId().equals(selected.getId())) {
+                    produits.set(i, selected);
+                    break;
+                }
+            }
+        }
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Modifié", "Article modifié !"));
+        selected = new Produit();
+    }
+
+    public void delete(Long id, String name) {
         service.deleteProduit(id);
         if (produits != null) {
             produits.removeIf(p -> p.getId().equals(id));
         }
         FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Supprimé", "Article supprimé !"));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Supprimé",
+                        "Article \"" + name + "\" supprimé !"));
     }
 
     public Produit getProduit() { return produit; }
     public void setProduit(Produit produit) { this.produit = produit; }
+
+    public Produit getSelected() { return selected; }
+    public void setSelected(Produit selected) { this.selected = selected; }
 }
